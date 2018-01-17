@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 public class ListenableFutureExample {
     public static void main(String[] args) {
 
-        //1.callback
         ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
         ListenableFuture<String> explosion = service.submit(new Callable<String>() {
             @Override
@@ -22,6 +21,7 @@ public class ListenableFutureExample {
                 return "a";
             }
         });
+        //submit会触发run操作
         Futures.addCallback(explosion, new FutureCallback<String>() {
             // we want this handler to run immediately after we push the big red button!
             @Override
@@ -34,9 +34,10 @@ public class ListenableFutureExample {
                 System.out.println("fail"); // escaped the explosion!
             }
         });
+        //addcallback会触发run操作
         //内部实现还是通过executorService来实现的
         //submit使用的是前一句创建的executor,添加回调又是使用的另外一个executor
-        //在addCallback执行的过程中，会调用future.get方法，同步来获取值，但不会阻塞主线程，所以还是异步的
+        //在addCallback执行的过程中，会调用future.get方法，同步来获取值，但不会阻塞主线程,只会阻塞自己那个线程，所以还是异步的
 
 
         //2.transform
