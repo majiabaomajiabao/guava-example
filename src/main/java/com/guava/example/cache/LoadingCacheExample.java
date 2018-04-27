@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * @author majiabao on 2017/11/21.
  */
 public class LoadingCacheExample {
-    public static void main(String[] args) throws ExecutionException {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         //方法一
         LoadingCache<String, Integer> cache = CacheBuilder.newBuilder()
                 .maximumSize(1000)
@@ -20,10 +20,16 @@ public class LoadingCacheExample {
                             public Integer load(String key) {
                                 return key.length();
                             }
-                        });
 
-        cache.get("aaa");
-        cache.get("aaa");
+                            public Integer reload(String key) {
+                                return key.length() + 1;
+                            }
+                        });
+        System.out.println(cache.get("aaa"));
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println(cache.get("aaa"));
+        System.out.println(cache.get("aaa"));
+        cache.refresh("aaa");
 
         //方法二
         Cache<String, Integer> cache2 = CacheBuilder.newBuilder()
